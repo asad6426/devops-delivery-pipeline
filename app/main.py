@@ -2,7 +2,12 @@
 import os
 
 from flask import Flask, Response, jsonify, request
-from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, Counter, generate_latest
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
+    Counter,
+    generate_latest,
+)
 
 
 def create_app() -> Flask:
