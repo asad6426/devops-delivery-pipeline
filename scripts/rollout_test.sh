@@ -28,9 +28,11 @@ ready_replicas() {
   kubectl -n "$NS" get "$DEPLOY" -o jsonpath='{.status.readyReplicas}'
 }
 
+# One patch, so that each release is exactly one revision and undo returns to the last good one.
 release() {
-  kubectl -n "$NS" set image "$DEPLOY" "api=delivery-api:$1"
-  kubectl -n "$NS" set env "$DEPLOY" "APP_VERSION=$1"
+  local patch='{"spec":{"template":{"spec":{"containers":[{"name":"api","image":"delivery-api:%s","env":[{"name":"APP_VERSION","value":"%s"}]}]}}}}'
+  # shellcheck disable=SC2059
+  kubectl -n "$NS" patch "$DEPLOY" --type=strategic -p "$(printf "$patch" "$1" "$1")"
 }
 
 echo "== 1. First release"
